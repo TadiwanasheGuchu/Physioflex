@@ -12,7 +12,6 @@ export default async function PortalLayout({ children }: { children: React.React
     redirect("/auth/login?redirect=/portal");
   }
 
-  // Fetch patient profile
   const { data: patientRaw } = await supabase
     .from("patients")
     .select("first_name, last_name")
@@ -26,10 +25,13 @@ export default async function PortalLayout({ children }: { children: React.React
     : user.email ?? "Patient";
 
   return (
-    <div className="min-h-screen bg-[#f6f9fc] flex">
+    <div className="min-h-screen bg-[#f6f9fc]">
       <PortalSidebar name={name} email={user.email ?? ""} />
-      <div className="flex-1 flex flex-col min-w-0 lg:ml-64">
-        <main className="flex-1 p-6 lg:p-8">{children}</main>
+      {/* Offset for fixed sidebar (desktop) and fixed top bar (mobile) */}
+      <div className="lg:ml-64">
+        {/* Spacer for mobile fixed top bar — only in the content column */}
+        <div className="h-14 lg:hidden" />
+        <main className="p-4 sm:p-6 lg:p-8 min-h-screen">{children}</main>
       </div>
     </div>
   );

@@ -117,10 +117,10 @@
 ## Phase 8 — Payments
 *Depends on Phase 5 (booking) + Phase 4 (auth).*
 
-- [x] **8.1** Choose and set up payment provider (Stripe or Peach Payments)
-- [x] **8.2** Build **/book/pay** page — card payment form → [PAYMENTS.md](docs/features/PAYMENTS.md)
-- [x] **8.3** Build mobile money payment flow → [PAYMENTS.md](docs/features/PAYMENTS.md)
-- [x] **8.4** Build payment webhook handler → `POST /api/webhooks/payment`
+- [ ] **8.1** Choose and set up payment provider (Stripe not available in Namibia — deferred)
+- [ ] **8.2** Build **/book/pay** page — deferred pending payment provider decision
+- [ ] **8.3** Build mobile money payment flow (MobiPay/EFT) → [PAYMENTS.md](docs/features/PAYMENTS.md)
+- [ ] **8.4** Build payment webhook handler → `POST /api/webhooks/payment`
 - [x] **8.5** Implement PDF invoice generation (`@react-pdf/renderer`) → [PAYMENTS.md](docs/features/PAYMENTS.md)
 - [x] **8.6** Link invoices to patient portal billing page → [PAYMENTS.md](docs/features/PAYMENTS.md)
 
@@ -129,27 +129,27 @@
 ## Phase 9 — Admin Dashboard
 *Depends on Phases 4, 5, 6, 7, 8.*
 
-- [ ] **9.1** Install recharts → `npm install recharts`
-- [ ] **9.2** Build admin layout (sidebar, role check) → [ADMIN.md](docs/features/ADMIN.md)
-- [ ] **9.3** Build **/admin** overview dashboard (KPI cards, today's schedule) → [ADMIN.md](docs/features/ADMIN.md)
-- [ ] **9.4** Build **/admin/bookings** (table, calendar view, filters) → [ADMIN.md](docs/features/ADMIN.md)
-- [ ] **9.5** Build **/admin/patients** (list + detail page) → [ADMIN.md](docs/features/ADMIN.md)
-- [ ] **9.6** Build **/admin/therapists** (list + availability schedule editor) → [ADMIN.md](docs/features/ADMIN.md)
-- [ ] **9.7** Build **/admin/finance** (revenue chart, invoice table, CSV export) → [ADMIN.md](docs/features/ADMIN.md)
-- [ ] **9.8** Build **/admin/analytics** (peak times heatmap, service breakdown) → [ADMIN.md](docs/features/ADMIN.md)
-- [ ] **9.9** Build **/admin/content** (blog CMS, FAQ editor, reviews moderation) → [ADMIN.md](docs/features/ADMIN.md)
+- [x] **9.1** Install recharts → `npm install recharts`
+- [x] **9.2** Build admin layout (sidebar, role check) → [ADMIN.md](docs/features/ADMIN.md)
+- [x] **9.3** Build **/admin** overview dashboard (KPI cards, today's schedule) → [ADMIN.md](docs/features/ADMIN.md)
+- [x] **9.4** Build **/admin/bookings** (table, calendar view, filters) → [ADMIN.md](docs/features/ADMIN.md)
+- [x] **9.5** Build **/admin/patients** (list + detail page) → [ADMIN.md](docs/features/ADMIN.md)
+- [x] **9.6** Build **/admin/therapists** (list + availability schedule editor) → [ADMIN.md](docs/features/ADMIN.md)
+- [x] **9.7** Build **/admin/finance** (revenue chart, invoice table, CSV export) → [ADMIN.md](docs/features/ADMIN.md)
+- [x] **9.8** Build **/admin/analytics** (peak times heatmap, service breakdown) → [ADMIN.md](docs/features/ADMIN.md)
+- [x] **9.9** Build **/admin/content** (blog CMS, FAQ editor, reviews moderation) → [ADMIN.md](docs/features/ADMIN.md)
 
 ---
 
 ## Phase 10 — Reviews System
 *Depends on Phase 4 (auth + database).*
 
-- [ ] **10.1** Build review submission API → `POST /api/reviews`
-- [ ] **10.2** Build **/reviews/submit** page (token-gated, no login) → [REVIEWS.md](docs/features/REVIEWS.md)
-- [ ] **10.3** Build **/reviews** public page (filtered list, success stories) → [REVIEWS.md](docs/features/REVIEWS.md)
-- [ ] **10.4** Add review trigger to notification flow (48h post-appointment) → [REVIEWS.md](docs/features/REVIEWS.md)
-- [ ] **10.5** Build review moderation in `/admin/content` → [REVIEWS.md](docs/features/REVIEWS.md)
-- [ ] **10.6** Upgrade homepage testimonials to pull live from database → [REVIEWS.md](docs/features/REVIEWS.md)
+- [x] **10.1** Build review submission API → `POST /api/reviews`
+- [x] **10.2** Build **/reviews/submit** page (token-gated, no login) → [REVIEWS.md](docs/features/REVIEWS.md)
+- [x] **10.3** Build **/reviews** public page (filtered list, success stories) → [REVIEWS.md](docs/features/REVIEWS.md)
+- [x] **10.4** Add review trigger to notification flow (48h post-appointment) → [REVIEWS.md](docs/features/REVIEWS.md)
+- [x] **10.5** Build review moderation in `/admin/content` → [REVIEWS.md](docs/features/REVIEWS.md)
+- [x] **10.6** Upgrade homepage testimonials to pull live from database → [REVIEWS.md](docs/features/REVIEWS.md)
 
 ---
 

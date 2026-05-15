@@ -661,10 +661,8 @@ export function BookingWizard({
       return;
     }
 
-    // Redirect to payment page — payment page redirects to success on completion
     router.push(
-      `/book/pay?appointmentId=${data.id}` +
-      `&ref=${data.reference}` +
+      `/book/success?ref=${data.reference}` +
       `&date=${encodeURIComponent(booking.date)}` +
       `&time=${encodeURIComponent(booking.time)}` +
       `&service=${encodeURIComponent(booking.service?.name ?? "")}` +

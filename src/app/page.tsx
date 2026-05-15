@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { createClient } from "@/lib/supabase/server";
 import {
   ArrowRight,
   CheckCircle,
@@ -260,7 +261,26 @@ const categoryColors: Record<string, string> = {
 
 // ── Page ────────────────────────────────────────────────────
 
-export default function Home() {
+export default async function Home() {
+  // Fetch top 3 approved reviews for homepage
+  let featuredReviews: { display_name: string; suburb: string | null; rating: number; body: string; service_name: string | null }[] = [];
+  try {
+    const supabase = await createClient();
+    const db = supabase as any;
+    const { data } = await db
+      .from("reviews")
+      .select("display_name, suburb, rating, body, services(name)")
+      .eq("status", "approved")
+      .gte("rating", 4)
+      .order("rating", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(3);
+    if (data && data.length >= 3) {
+      featuredReviews = data.map((r: any) => ({ ...r, service_name: r.services?.name ?? null }));
+    }
+  } catch {
+    // Fall through to static data
+  }
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
@@ -632,10 +652,16 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Review cards */}
+          {/* Review cards — live DB or static fallback */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((t) => (
-              <div key={t.name} className="p-8 rounded-xl border border-[#e3e8ee] bg-white"
+            {(featuredReviews.length >= 3 ? featuredReviews : testimonials.map((t) => ({
+              display_name: t.name,
+              suburb: t.location,
+              rating: t.rating,
+              body: t.text,
+              service_name: t.service,
+            }))).map((t, idx) => (
+              <div key={idx} className="p-8 rounded-xl border border-[#e3e8ee] bg-white"
                 style={{ boxShadow: "rgba(0,55,112,0.08) 0 1px 3px" }}>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex gap-0.5">
@@ -646,11 +672,11 @@ export default function Home() {
                   <span className="text-[10px] font-medium text-[#0f766e] bg-[#ccfbf1] px-2 py-0.5 rounded-full">Verified Patient</span>
                 </div>
                 <p className="text-[#0d253d] text-sm leading-7 mb-6" style={{ fontWeight: 300 }}>
-                  &ldquo;{t.text}&rdquo;
+                  &ldquo;{t.body}&rdquo;
                 </p>
                 <div>
-                  <div className="text-[#0d253d] text-sm font-medium">{t.name} · {t.location}</div>
-                  <div className="text-[#64748d] text-xs mt-0.5">{t.service} · {t.date}</div>
+                  <div className="text-[#0d253d] text-sm font-medium">{t.display_name}{t.suburb ? ` · ${t.suburb}` : ""}</div>
+                  {t.service_name && <div className="text-[#64748d] text-xs mt-0.5">{t.service_name}</div>}
                 </div>
               </div>
             ))}

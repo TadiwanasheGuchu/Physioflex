@@ -6,12 +6,10 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { conditions, categoryMeta } from "@/lib/conditions-data";
 
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{ slug: string }>;
-}
-
-export async function generateStaticParams() {
-  return conditions.map((c) => ({ slug: c.id }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

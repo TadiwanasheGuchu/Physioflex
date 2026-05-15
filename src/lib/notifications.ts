@@ -214,3 +214,57 @@ export async function sendInvoiceEmail(data: InvoiceData) {
     await sendWhatsApp(data.patientWhatsapp, msg);
   }
 }
+
+// ─── Review Request ───────────────────────────────────────────────────────────
+
+export async function sendReviewRequest(data: {
+  patientName: string;
+  patientEmail: string;
+  patientWhatsapp: string | null;
+  appointmentId: string;
+  serviceName: string;
+  therapistName: string;
+  siteUrl: string;
+}) {
+  const token = Buffer.from(data.appointmentId).toString("base64url");
+  const reviewUrl = `${data.siteUrl}/reviews/submit?token=${token}`;
+
+  // Email
+  const html = `
+    <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 16px;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: #ccfbf1; display: inline-flex; align-items: center; justify-content: center; font-size: 24px;">⭐</div>
+      </div>
+      <h1 style="font-size: 20px; color: #0d253d; margin: 0 0 8px; font-weight: 600; text-align: center;">How was your session, ${data.patientName}?</h1>
+      <p style="color: #6b7a99; font-size: 14px; text-align: center; margin: 0 0 24px;">
+        Your <strong>${data.serviceName}</strong> session with ${data.therapistName} is now complete.<br>
+        We'd love to hear your feedback — it only takes 1 minute.
+      </p>
+      <div style="text-align: center; margin-bottom: 24px;">
+        <a href="${reviewUrl}" style="display: inline-block; background: #0d9488; color: white; text-decoration: none; padding: 14px 32px; border-radius: 100px; font-size: 14px; font-weight: 500;">
+          Leave a Review →
+        </a>
+      </div>
+      <p style="font-size: 12px; color: #6b7a99; text-align: center;">
+        Your review helps other patients in Swakopmund find the right physiotherapy care.<br>
+        This link is personal to you — no login required.
+      </p>
+    </div>
+  `;
+
+  await sendEmail({
+    to: data.patientEmail,
+    subject: `How was your session? — Physioflex`,
+    html,
+  });
+
+  // WhatsApp
+  if (data.patientWhatsapp) {
+    const msg =
+      `Hi ${data.patientName}! 👋\n\n` +
+      `Your ${data.serviceName} session with ${data.therapistName} is now complete.\n\n` +
+      `We'd love to hear your feedback — it only takes 1 minute:\n${reviewUrl}\n\n` +
+      `Thank you for choosing Physioflex! 🙏`;
+    await sendWhatsApp(data.patientWhatsapp, msg);
+  }
+}

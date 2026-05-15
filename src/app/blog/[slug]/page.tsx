@@ -8,12 +8,10 @@ import { Footer } from "@/components/footer";
 import { blogPosts, categoryMeta, type ContentBlock } from "@/lib/blog-data";
 import { ShareButtons } from "./share-buttons";
 
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{ slug: string }>;
-}
-
-export async function generateStaticParams() {
-  return blogPosts.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

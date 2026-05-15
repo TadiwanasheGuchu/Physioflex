@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { SuccessContent } from "./success-content";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Booking Confirmed | Physioflex",
   robots: { index: false },

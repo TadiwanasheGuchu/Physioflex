@@ -166,8 +166,11 @@ alter table public.progress_logs enable row level security;
 create policy "profiles: own read"   on public.profiles for select using (auth.uid() = id);
 create policy "profiles: own update" on public.profiles for update using (auth.uid() = id);
 
--- Patients: own record
-create policy "patients: own"   on public.patients for all using (auth.uid() = user_id);
+-- Patients: own record (select + update)
+create policy "patients: own select" on public.patients for select using (auth.uid() = user_id);
+create policy "patients: own update" on public.patients for update using (auth.uid() = user_id);
+-- Allow creating patient record on first booking
+create policy "patients: insert own" on public.patients for insert with check (auth.uid() = user_id);
 
 -- Therapists: anyone can read active therapists; therapists manage their own
 create policy "therapists: public read" on public.therapists for select using (is_active = true);
@@ -177,10 +180,16 @@ create policy "therapists: own update" on public.therapists for update using (au
 create policy "services: public read" on public.services for select using (is_active = true);
 
 -- Appointments: patients see their own; therapists see theirs
-create policy "appointments: patient" on public.appointments for select
+create policy "appointments: patient select" on public.appointments for select
   using (patient_id in (select id from public.patients where user_id = auth.uid()));
-create policy "appointments: therapist" on public.appointments for select
+create policy "appointments: therapist select" on public.appointments for select
   using (therapist_id in (select id from public.therapists where user_id = auth.uid()));
+-- Patients can book (insert) their own appointments
+create policy "appointments: patient insert" on public.appointments for insert
+  with check (patient_id in (select id from public.patients where user_id = auth.uid()));
+-- Patients can cancel/update their own appointments
+create policy "appointments: patient update" on public.appointments for update
+  using (patient_id in (select id from public.patients where user_id = auth.uid()));
 
 -- Invoices: patients see their own
 create policy "invoices: patient" on public.invoices for select
