@@ -30,6 +30,7 @@ export default async function BillingPage() {
   let appts: any[] = [];
 
   if (patient) {
+    // Fetch appointments and join invoices separately
     const { data: appointments } = await supabase
       .from("appointments")
       .select("id, starts_at, status, reference, services(name, price_nad)")
@@ -37,7 +38,23 @@ export default async function BillingPage() {
       .in("status", ["completed", "confirmed", "pending"])
       .order("starts_at", { ascending: false })
       .limit(20);
-    appts = (appointments ?? []) as any[];
+
+    const apptList = (appointments ?? []) as any[];
+
+    // Fetch invoices for this patient
+    const { data: invoices } = await supabase
+      .from("invoices")
+      .select("id, appointment_id")
+      .eq("patient_id", patient.id);
+
+    const invoiceMap = new Map(
+      ((invoices ?? []) as any[]).map((inv: any) => [inv.appointment_id, inv.id])
+    );
+
+    appts = apptList.map((a: any) => ({
+      ...a,
+      invoice_id: invoiceMap.get(a.id) ?? null,
+    }));
   }
 
   const totalPaid = appts
@@ -130,16 +147,17 @@ export default async function BillingPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      {a.status === "completed" && (
-                        <button
-                          disabled
-                          title="PDF invoices available in a future update"
-                          className="flex items-center gap-1 text-xs text-[#64748d] opacity-50 cursor-not-allowed"
+                      {a.invoice_id && (
+                        <a
+                          href={`/api/invoices/${a.invoice_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-xs text-[#0d9488] hover:underline"
                           style={{ fontWeight: 300 }}
                         >
                           <Download className="w-3.5 h-3.5" />
                           PDF
-                        </button>
+                        </a>
                       )}
                     </td>
                   </tr>

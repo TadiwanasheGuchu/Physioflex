@@ -117,12 +117,12 @@
 ## Phase 8 — Payments
 *Depends on Phase 5 (booking) + Phase 4 (auth).*
 
-- [ ] **8.1** Choose and set up payment provider (Stripe or Peach Payments)
-- [ ] **8.2** Build **/book/pay** page — card payment form → [PAYMENTS.md](docs/features/PAYMENTS.md)
-- [ ] **8.3** Build mobile money payment flow → [PAYMENTS.md](docs/features/PAYMENTS.md)
-- [ ] **8.4** Build payment webhook handler → `POST /api/webhooks/payment`
-- [ ] **8.5** Implement PDF invoice generation (`@react-pdf/renderer`) → [PAYMENTS.md](docs/features/PAYMENTS.md)
-- [ ] **8.6** Link invoices to patient portal billing page → [PAYMENTS.md](docs/features/PAYMENTS.md)
+- [x] **8.1** Choose and set up payment provider (Stripe or Peach Payments)
+- [x] **8.2** Build **/book/pay** page — card payment form → [PAYMENTS.md](docs/features/PAYMENTS.md)
+- [x] **8.3** Build mobile money payment flow → [PAYMENTS.md](docs/features/PAYMENTS.md)
+- [x] **8.4** Build payment webhook handler → `POST /api/webhooks/payment`
+- [x] **8.5** Implement PDF invoice generation (`@react-pdf/renderer`) → [PAYMENTS.md](docs/features/PAYMENTS.md)
+- [x] **8.6** Link invoices to patient portal billing page → [PAYMENTS.md](docs/features/PAYMENTS.md)
 
 ---
 

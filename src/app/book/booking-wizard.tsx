@@ -661,7 +661,15 @@ export function BookingWizard({
       return;
     }
 
-    router.push(`/book/success?ref=${data.reference}&date=${booking.date}&time=${booking.time}&service=${encodeURIComponent(booking.service?.name ?? "")}&therapist=${encodeURIComponent(booking.therapistName)}`);
+    // Redirect to payment page — payment page redirects to success on completion
+    router.push(
+      `/book/pay?appointmentId=${data.id}` +
+      `&ref=${data.reference}` +
+      `&date=${encodeURIComponent(booking.date)}` +
+      `&time=${encodeURIComponent(booking.time)}` +
+      `&service=${encodeURIComponent(booking.service?.name ?? "")}` +
+      `&therapist=${encodeURIComponent(booking.therapistName)}`
+    );
   }
 
   return (

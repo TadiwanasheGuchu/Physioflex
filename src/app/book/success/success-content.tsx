@@ -69,6 +69,7 @@ export function SuccessContent() {
   const time = params.get("time") ?? "";
   const service = params.get("service") ?? "Physiotherapy Session";
   const therapist = params.get("therapist") ?? "Your Therapist";
+  const paid = params.get("paid") === "true";
 
   const waText = encodeURIComponent(
     `Hi Physioflex! My booking reference is ${ref} for ${service} on ${formatDate(date)} at ${formatTime(time)}.`
@@ -107,9 +108,15 @@ export function SuccessContent() {
         >
           Booking Confirmed
         </h1>
-        <p className="text-sm text-[#64748d] mb-6" style={{ fontWeight: 300 }}>
+        <p className="text-sm text-[#64748d] mb-3" style={{ fontWeight: 300 }}>
           We look forward to seeing you soon.
         </p>
+        {paid && (
+          <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1 rounded-full bg-[#f0fdf9] text-[#0d9488] border border-[#0d9488]/20 mb-4" style={{ fontWeight: 400 }}>
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            Payment received
+          </span>
+        )}
 
         {/* Reference badge */}
         <div className="bg-[#f6f9fc] rounded-xl border border-[#e3e8ee] px-5 py-4 mb-6 text-left">
