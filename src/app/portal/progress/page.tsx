@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { Activity } from "lucide-react";
+import { RecoverySuggestions } from "./recovery-suggestions";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-NA", {
@@ -144,17 +145,11 @@ export default async function ProgressPage() {
         )}
       </div>
 
-      {/* Functional goals placeholder */}
-      <div>
-        <h2 className="text-base text-[#0d253d] mb-4" style={{ fontWeight: 400, letterSpacing: "-0.2px" }}>
-          Treatment Goals
-        </h2>
-        <div className="bg-white rounded-xl border border-[#e3e8ee] p-6 text-center">
-          <p className="text-sm text-[#64748d]" style={{ fontWeight: 300 }}>
-            Your therapist will set treatment goals here after your first session.
-          </p>
-        </div>
-      </div>
+      {/* AI Recovery Suggestions */}
+      <RecoverySuggestions
+        sessionCount={completed.length}
+        recentServices={[...new Set(completed.slice(0, 5).map((s: any) => s.services?.name).filter(Boolean))]}
+      />
     </div>
   );
 }

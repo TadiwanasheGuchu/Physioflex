@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { StickyBookingBar } from "@/components/sticky-booking-bar";
+import { ChatWidget } from "@/components/chat-widget";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -141,6 +142,7 @@ export default function RootLayout({
         {children}
         <WhatsAppButton />
         <StickyBookingBar />
+        <ChatWidget />
       </body>
     </html>
   );
