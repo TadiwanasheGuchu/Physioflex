@@ -458,6 +458,7 @@ function StepDetails({
   onBack,
   submitting,
   error,
+  isGuest,
 }: {
   booking: BookingState;
   onChange: (field: keyof BookingState, value: string | boolean) => void;
@@ -465,6 +466,7 @@ function StepDetails({
   onBack: () => void;
   submitting: boolean;
   error: string;
+  isGuest: boolean;
 }) {
   const input = "w-full px-4 py-3 text-sm text-[#0d253d] placeholder:text-[#64748d] bg-white border border-[#a8c3de] rounded-lg focus:outline-none focus:border-[#0d9488] transition-colors";
 
@@ -503,6 +505,18 @@ function StepDetails({
               onChange={e => onChange("whatsapp", e.target.value)} placeholder="Same as phone" />
           </div>
         </div>
+
+        {isGuest && (
+          <div>
+            <label className="block text-xs text-[#64748d] mb-1.5" style={{ fontWeight: 400 }}>Email address *</label>
+            <input className={input} style={{ fontWeight: 300 }} type="email" required value={booking.email}
+              onChange={e => onChange("email", e.target.value)} placeholder="you@example.com" />
+            <p className="text-xs text-[#6b7a99] mt-1" style={{ fontWeight: 300 }}>
+              Your confirmation will be sent here.{" "}
+              <a href="/auth/login?redirect=/book" className="text-[#0d9488] hover:underline">Have an account? Log in</a>
+            </p>
+          </div>
+        )}
 
         {/* Medical aid toggle */}
         <div className="p-4 rounded-xl border border-[#e3e8ee]">
@@ -581,7 +595,7 @@ function StepDetails({
         </button>
         <button
           onClick={onNext}
-          disabled={submitting || !booking.firstName || !booking.lastName || !booking.phone || !booking.acceptTerms}
+          disabled={submitting || !booking.firstName || !booking.lastName || !booking.phone || !booking.acceptTerms || (isGuest && !booking.email)}
           className="px-6 py-3 rounded-full bg-[#0d9488] text-white text-sm font-medium hover:bg-[#0f766e] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {submitting ? "Booking…" : "Confirm Booking"}
@@ -597,10 +611,12 @@ export function BookingWizard({
   services,
   therapists,
   userEmail,
+  isGuest,
 }: {
   services: Service[];
   therapists: Therapist[];
   userEmail: string;
+  isGuest: boolean;
 }) {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -641,9 +657,11 @@ export function BookingWizard({
         therapistId: booking.therapistId,
         date: booking.date,
         time: booking.time,
+        isGuest,
         patient: {
           firstName: booking.firstName,
           lastName: booking.lastName,
+          email: booking.email,
           phone: booking.phone,
           whatsapp: booking.whatsapp,
           medicalAidName: booking.medicalAidName,
@@ -708,6 +726,7 @@ export function BookingWizard({
           onBack={() => setStep(3)}
           submitting={submitting}
           error={error}
+          isGuest={isGuest}
         />
       )}
     </div>

@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { BookingWizard } from "./booking-wizard";
@@ -8,16 +7,14 @@ export const metadata: Metadata = {
   robots: { index: false },
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function BookPage() {
   const supabase = await createClient();
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/auth/login?redirect=/book");
-  }
 
   const [{ data: services }, { data: therapists }] = await Promise.all([
     supabase
@@ -62,7 +59,8 @@ export default async function BookPage() {
         <BookingWizard
           services={services ?? []}
           therapists={therapists ?? []}
-          userEmail={user.email ?? ""}
+          userEmail={user?.email ?? ""}
+          isGuest={!user}
         />
       </div>
     </main>

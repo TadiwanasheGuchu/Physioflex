@@ -35,7 +35,8 @@ create trigger on_auth_user_created
 -- ─── Patients ─────────────────────────────────────────────────
 create table public.patients (
   id                  uuid primary key default gen_random_uuid(),
-  user_id             uuid not null unique references public.profiles(id) on delete cascade,
+  user_id             uuid unique references public.profiles(id) on delete cascade,
+  email               text,
   first_name          text not null,
   last_name           text not null,
   phone               text,
