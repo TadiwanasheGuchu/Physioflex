@@ -1,0 +1,281 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  passwordHash  String?
+  role          UserRole  @default(PATIENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  patient    Patient?
+  therapist  Therapist?
+  accounts   Account[]
+  sessions   Session[]
+  messages   Message[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  PATIENT
+  THERAPIST
+  ADMIN
+}
+
+// NextAuth tables
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ─── People ──────────────────────────────────────────────────────────────────
+
+model Patient {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  firstName       String
+  lastName        String
+  phone           String?
+  whatsapp        String?
+  dateOfBirth     DateTime?
+  gender          String?
+  address         String?
+  suburb          String?
+  emergencyName   String?
+  emergencyPhone  String?
+  medicalAidName  String?
+  medicalAidNumber String?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+  invoices     Invoice[]
+  reviews      Review[]
+  progressLogs ProgressLog[]
+
+  @@map("patients")
+}
+
+model Therapist {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  firstName       String
+  lastName        String
+  title           String
+  hpcnaNumber     String
+  bio             String?
+  photo           String?
+  specialisations String[]
+  languages       String[]
+  yearsExperience Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments      Appointment[]
+  availabilitySlots AvailabilitySlot[]
+
+  @@map("therapists")
+}
+
+// ─── Services ────────────────────────────────────────────────────────────────
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  durationMin Int      @default(60)
+  priceNad    Decimal  @db.Decimal(10, 2)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  appointments Appointment[]
+
+  @@map("services")
+}
+
+// ─── Availability & Booking ───────────────────────────────────────────────────
+
+model AvailabilitySlot {
+  id          String    @id @default(cuid())
+  therapistId String
+  dayOfWeek   Int       // 0=Sun, 1=Mon … 6=Sat
+  startTime   String    // "08:00"
+  endTime     String    // "17:00"
+  isBlocked   Boolean   @default(false)
+  blockedDate DateTime? // for one-off blocks (holidays, leave)
+
+  therapist Therapist @relation(fields: [therapistId], references: [id], onDelete: Cascade)
+
+  @@map("availability_slots")
+}
+
+model Appointment {
+  id          String            @id @default(cuid())
+  patientId   String
+  therapistId String
+  serviceId   String
+  startsAt    DateTime
+  endsAt      DateTime
+  status      AppointmentStatus @default(PENDING)
+  notes       String?
+  reference   String            @unique @default(cuid())
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  patient   Patient   @relation(fields: [patientId], references: [id])
+  therapist Therapist @relation(fields: [therapistId], references: [id])
+  service   Service   @relation(fields: [serviceId], references: [id])
+  invoice   Invoice?
+  review    Review?
+  messages  Message[]
+
+  @@map("appointments")
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+// ─── Billing ─────────────────────────────────────────────────────────────────
+
+model Invoice {
+  id            String        @id @default(cuid())
+  patientId     String
+  appointmentId String?       @unique
+  number        String        @unique
+  amountNad     Decimal       @db.Decimal(10, 2)
+  status        InvoiceStatus @default(UNPAID)
+  paidAt        DateTime?
+  pdfUrl        String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  patient     Patient      @relation(fields: [patientId], references: [id])
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
+
+  @@map("invoices")
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PAID
+  PARTIALLY_PAID
+  VOID
+}
+
+// ─── Reviews ─────────────────────────────────────────────────────────────────
+
+model Review {
+  id            String       @id @default(cuid())
+  patientId     String?
+  appointmentId String?      @unique
+  displayName   String
+  suburb        String?
+  serviceId     String?
+  rating        Int
+  body          String
+  status        ReviewStatus @default(PENDING)
+  helpfulCount  Int          @default(0)
+  adminReply    String?
+  adminRepliedAt DateTime?
+  verifiedPatient Boolean    @default(false)
+  createdAt     DateTime     @default(now())
+
+  patient     Patient?     @relation(fields: [patientId], references: [id])
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
+
+  @@map("reviews")
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ─── Messaging ───────────────────────────────────────────────────────────────
+
+model Message {
+  id            String      @id @default(cuid())
+  userId        String
+  appointmentId String?
+  subject       String?
+  body          String
+  isRead        Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+
+  user        User         @relation(fields: [userId], references: [id])
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
+
+  @@map("messages")
+}
+
+// ─── Progress Tracking ───────────────────────────────────────────────────────
+
+model ProgressLog {
+  id        String   @id @default(cuid())
+  patientId String
+  date      DateTime @default(now())
+  painScore Int      // 0–10
+  notes     String?
+  createdAt DateTime @default(now())
+
+  patient Patient @relation(fields: [patientId], references: [id])
+
+  @@map("progress_logs")
+}
