@@ -31,7 +31,11 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isProtectedPortal = pathname.startsWith("/portal");
   const isProtectedAdmin = pathname.startsWith("/admin");
-  const isAuthPage = pathname.startsWith("/auth");
+  // /auth/reset and /auth/callback must be reachable even while a session exists
+  const isAuthPage =
+    pathname.startsWith("/auth") &&
+    !pathname.startsWith("/auth/reset") &&
+    !pathname.startsWith("/auth/callback");
 
   // Redirect unauthenticated users away from protected routes
   if ((isProtectedPortal || isProtectedAdmin) && !user) {

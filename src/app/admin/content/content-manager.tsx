@@ -1,9 +1,13 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { CheckCircle, XCircle, Star, FileText, Settings, MessageSquare } from "lucide-react";
+import {
+  CheckCircle, XCircle, Star, FileText, Settings,
+  MessageSquare, Pencil, Trash2, Plus, Clock, DollarSign,
+} from "lucide-react";
 import type { BlogPost } from "@/lib/blog-data";
 import { approveReview, rejectReview, replyToReview } from "./review-actions";
+import { createService, updateService, deleteService } from "./service-actions";
 
 interface Service {
   id: string;
@@ -31,48 +35,269 @@ interface Props {
 
 type Tab = "services" | "blog" | "reviews";
 
-function ServicesTab({ services }: { services: Service[] }) {
+// ─── Service Form ──────────────────────────────────────────────────────────────
+
+interface ServiceFormData {
+  name: string;
+  description: string;
+  duration_min: number;
+  price_nad: number;
+  is_active: boolean;
+}
+
+function ServiceForm({
+  initial,
+  onSave,
+  onCancel,
+  isPending,
+}: {
+  initial?: Service;
+  onSave: (data: ServiceFormData) => void;
+  onCancel: () => void;
+  isPending: boolean;
+}) {
+  const [form, setForm] = useState<ServiceFormData>({
+    name: initial?.name ?? "",
+    description: initial?.description ?? "",
+    duration_min: initial?.duration_min ?? 60,
+    price_nad: initial?.price_nad ?? 0,
+    is_active: initial?.is_active ?? true,
+  });
+
+  const set = <K extends keyof ServiceFormData>(k: K, v: ServiceFormData[K]) =>
+    setForm((f) => ({ ...f, [k]: v }));
+
   return (
-    <div className="bg-white rounded-xl border border-[#e3e8ee] shadow-sm overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-[#e3e8ee]">
-        <h2 className="text-sm font-semibold text-[#0d253d]">Services ({services.length})</h2>
-        <p className="text-xs text-[#6b7a99]">Edit prices and durations in Supabase dashboard</p>
+    <div className="p-4 bg-[#f6f9fc] border border-[#e3e8ee] rounded-xl space-y-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="sm:col-span-1">
+          <label className="block text-xs text-[#6b7a99] mb-1">Service name</label>
+          <input
+            type="text"
+            required
+            value={form.name}
+            onChange={(e) => set("name", e.target.value)}
+            placeholder="e.g. Sports Massage"
+            className="w-full px-3 py-2 text-sm border border-[#e3e8ee] rounded-lg bg-white focus:outline-none focus:border-[#0d9488] transition-colors"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-[#6b7a99] mb-1">Duration (min)</label>
+          <input
+            type="number"
+            min={15}
+            step={15}
+            value={form.duration_min}
+            onChange={(e) => set("duration_min", Number(e.target.value))}
+            className="w-full px-3 py-2 text-sm border border-[#e3e8ee] rounded-lg bg-white focus:outline-none focus:border-[#0d9488] transition-colors"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-[#6b7a99] mb-1">Price (N$)</label>
+          <input
+            type="number"
+            min={0}
+            value={form.price_nad}
+            onChange={(e) => set("price_nad", Number(e.target.value))}
+            className="w-full px-3 py-2 text-sm border border-[#e3e8ee] rounded-lg bg-white focus:outline-none focus:border-[#0d9488] transition-colors"
+          />
+        </div>
       </div>
-      <div className="divide-y divide-[#e3e8ee]">
-        {services.map((s) => (
-          <div key={s.id} className="px-5 py-4 flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <p className="font-medium text-sm text-[#0d253d]">{s.name}</p>
-                <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium border ${
-                  s.is_active ? "bg-green-50 text-green-700 border-green-200" : "bg-gray-100 text-gray-500 border-gray-200"
-                }`}>
-                  {s.is_active ? <CheckCircle className="w-2.5 h-2.5" /> : <XCircle className="w-2.5 h-2.5" />}
-                  {s.is_active ? "Active" : "Inactive"}
-                </span>
-              </div>
-              {s.description && <p className="text-xs text-[#6b7a99] mt-0.5 line-clamp-2">{s.description}</p>}
-            </div>
-            <div className="text-right shrink-0">
-              <p className="text-sm font-semibold text-[#0d253d]">N${s.price_nad}</p>
-              <p className="text-xs text-[#6b7a99]">{s.duration_min} min</p>
-            </div>
-          </div>
-        ))}
-        {services.length === 0 && (
-          <p className="px-5 py-10 text-center text-sm text-[#6b7a99]">No services found.</p>
-        )}
+
+      <div>
+        <label className="block text-xs text-[#6b7a99] mb-1">Description</label>
+        <textarea
+          rows={2}
+          value={form.description}
+          onChange={(e) => set("description", e.target.value)}
+          placeholder="Brief description shown to patients…"
+          className="w-full px-3 py-2 text-sm border border-[#e3e8ee] rounded-lg bg-white focus:outline-none focus:border-[#0d9488] transition-colors resize-none"
+        />
+      </div>
+
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <label className="flex items-center gap-2 text-xs text-[#6b7a99] cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={form.is_active}
+            onChange={(e) => set("is_active", e.target.checked)}
+            className="rounded accent-[#0d9488]"
+          />
+          Active — visible to patients when booking
+        </label>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-3 py-1.5 text-xs border border-[#e3e8ee] rounded-lg text-[#6b7a99] hover:bg-white transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={() => form.name.trim() && onSave(form)}
+            disabled={isPending || !form.name.trim()}
+            className="px-4 py-1.5 text-xs bg-[#0d9488] text-white rounded-lg hover:bg-[#0f766e] transition-colors disabled:opacity-50"
+          >
+            {isPending ? "Saving…" : "Save service"}
+          </button>
+        </div>
       </div>
     </div>
   );
 }
+
+// ─── Services Tab ──────────────────────────────────────────────────────────────
+
+function ServicesTab({ services }: { services: Service[] }) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  function handleAdd(data: ServiceFormData) {
+    startTransition(async () => {
+      await createService(data);
+      setAdding(false);
+    });
+  }
+
+  function handleUpdate(id: string, data: ServiceFormData) {
+    startTransition(async () => {
+      await updateService(id, data);
+      setEditingId(null);
+    });
+  }
+
+  function handleDelete(id: string) {
+    startTransition(async () => {
+      await deleteService(id);
+      setDeletingId(null);
+    });
+  }
+
+  return (
+    <div className="bg-white rounded-xl border border-[#e3e8ee] shadow-sm overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-[#e3e8ee]">
+        <h2 className="text-sm font-semibold text-[#0d253d]">Services ({services.length})</h2>
+        {!adding && (
+          <button
+            onClick={() => { setAdding(true); setEditingId(null); }}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#0d9488] text-white hover:bg-[#0f766e] transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" /> Add service
+          </button>
+        )}
+      </div>
+
+      <div className="divide-y divide-[#e3e8ee]">
+        {adding && (
+          <div className="px-5 py-4">
+            <ServiceForm
+              onSave={handleAdd}
+              onCancel={() => setAdding(false)}
+              isPending={isPending}
+            />
+          </div>
+        )}
+
+        {services.length === 0 && !adding && (
+          <p className="px-5 py-10 text-center text-sm text-[#6b7a99]">
+            No services yet. Add your first service above.
+          </p>
+        )}
+
+        {services.map((s) => (
+          <div key={s.id} className="px-5 py-4">
+            {editingId === s.id ? (
+              <ServiceForm
+                initial={s}
+                onSave={(data) => handleUpdate(s.id, data)}
+                onCancel={() => setEditingId(null)}
+                isPending={isPending}
+              />
+            ) : deletingId === s.id ? (
+              <div className="flex items-center justify-between gap-4 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
+                <p className="text-sm text-red-700">
+                  Delete <strong>{s.name}</strong>? This cannot be undone.
+                </p>
+                <div className="flex gap-2 shrink-0">
+                  <button
+                    onClick={() => setDeletingId(null)}
+                    className="px-3 py-1.5 text-xs border border-[#e3e8ee] rounded-lg bg-white text-[#6b7a99] hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleDelete(s.id)}
+                    disabled={isPending}
+                    className="px-3 py-1.5 text-xs bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+                  >
+                    {isPending ? "Deleting…" : "Delete"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="font-medium text-sm text-[#0d253d]">{s.name}</p>
+                    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium border ${
+                      s.is_active
+                        ? "bg-green-50 text-green-700 border-green-200"
+                        : "bg-gray-100 text-gray-500 border-gray-200"
+                    }`}>
+                      {s.is_active
+                        ? <CheckCircle className="w-2.5 h-2.5" />
+                        : <XCircle className="w-2.5 h-2.5" />}
+                      {s.is_active ? "Active" : "Inactive"}
+                    </span>
+                  </div>
+                  {s.description && (
+                    <p className="text-xs text-[#6b7a99] mt-0.5 line-clamp-2">{s.description}</p>
+                  )}
+                  <div className="flex items-center gap-3 mt-1.5">
+                    <span className="inline-flex items-center gap-1 text-xs text-[#6b7a99]">
+                      <Clock className="w-3 h-3" /> {s.duration_min} min
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-xs text-[#6b7a99]">
+                      <DollarSign className="w-3 h-3" /> N${s.price_nad}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    onClick={() => { setEditingId(s.id); setAdding(false); setDeletingId(null); }}
+                    className="p-1.5 rounded-lg border border-[#e3e8ee] text-[#6b7a99] hover:text-[#0d253d] hover:bg-[#f6f9fc] transition-colors"
+                    title="Edit"
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => { setDeletingId(s.id); setEditingId(null); }}
+                    className="p-1.5 rounded-lg border border-[#e3e8ee] text-[#6b7a99] hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition-colors"
+                    title="Delete"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Blog Tab ─────────────────────────────────────────────────────────────────
 
 function BlogTab({ posts }: { posts: BlogPost[] }) {
   return (
     <div className="bg-white rounded-xl border border-[#e3e8ee] shadow-sm overflow-hidden">
       <div className="flex items-center justify-between px-5 py-4 border-b border-[#e3e8ee]">
         <h2 className="text-sm font-semibold text-[#0d253d]">Blog Posts ({posts.length})</h2>
-        <p className="text-xs text-[#6b7a99]">Posts are managed in <code className="bg-gray-100 px-1 rounded">src/lib/blog-data.ts</code></p>
+        <p className="text-xs text-[#6b7a99]">Managed in <code className="bg-gray-100 px-1 rounded">src/lib/blog-data.ts</code></p>
       </div>
       <div className="divide-y divide-[#e3e8ee]">
         {posts.map((post) => (
@@ -102,6 +327,8 @@ function BlogTab({ posts }: { posts: BlogPost[] }) {
     </div>
   );
 }
+
+// ─── Reviews Tab ──────────────────────────────────────────────────────────────
 
 function ReviewCard({ review }: { review: Review }) {
   const [isPending, startTransition] = useTransition();
@@ -137,7 +364,6 @@ function ReviewCard({ review }: { review: Review }) {
 
       <p className="text-xs text-[#6b7a99] leading-relaxed">{review.body}</p>
 
-      {/* Moderation actions */}
       <div className="flex items-center gap-2 mt-3 flex-wrap">
         {review.status !== "approved" && (
           <button
@@ -236,6 +462,8 @@ function ReviewsTab({ reviews }: { reviews: Review[] }) {
   );
 }
 
+// ─── Root ──────────────────────────────────────────────────────────────────────
+
 export function ContentManager({ services, reviews, blogPosts }: Props) {
   const [tab, setTab] = useState<Tab>("services");
 
@@ -247,7 +475,6 @@ export function ContentManager({ services, reviews, blogPosts }: Props) {
 
   return (
     <div>
-      {/* Tab bar */}
       <div className="flex gap-1 bg-white border border-[#e3e8ee] rounded-xl p-1 mb-5 shadow-sm">
         {tabs.map(({ id, label, icon: Icon, count }) => (
           <button

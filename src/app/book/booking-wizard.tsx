@@ -225,9 +225,6 @@ function StepService({
                   <Clock size={12} />
                   {s.duration_min} min
                 </span>
-                <span className="inline-flex items-center gap-1 text-xs text-[#0d9488]" style={{ fontWeight: 400 }}>
-                  N$ {Number(s.price_nad).toFixed(0)}
-                </span>
               </div>
             </button>
           );
