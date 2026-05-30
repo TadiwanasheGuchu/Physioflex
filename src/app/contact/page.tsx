@@ -8,7 +8,7 @@ import { ContactForm } from "./contact-form";
 export const metadata: Metadata = {
   title: "Contact Us",
   description:
-    "Contact Physioflex in Swakopmund, Namibia. Call, WhatsApp, or email us. Located on Sam Nujoma Avenue, Swakopmund.",
+    "Contact Physioflex in Swakopmund, Namibia. Call, WhatsApp, or email us. Located at Spar Ocean View Shopping Centre, Eugene Muller Street, Swakopmund.",
   alternates: { canonical: "https://physioflex.na/contact" },
   openGraph: { url: "https://physioflex.na/contact" },
 };
@@ -43,8 +43,8 @@ export default function ContactPage() {
                       <div>
                         <p className="text-sm text-[#0d253d]" style={{ fontWeight: 400 }}>Address</p>
                         <p className="text-sm text-[#64748d] mt-0.5" style={{ fontWeight: 300 }}>
-                          Sam Nujoma Avenue<br />
-                          Swakopmund, Erongo Region<br />
+                          Shop Nr 2, Spar Ocean View Shopping Centre<br />
+                          Eugene Muller Street, Swakopmund, Erongo<br />
                           Namibia
                         </p>
                       </div>
@@ -95,7 +95,7 @@ export default function ContactPage() {
                       <div>
                         <p className="text-sm text-[#0d253d]" style={{ fontWeight: 400 }}>Hours</p>
                         <div className="text-sm text-[#64748d] mt-0.5 space-y-0.5" style={{ fontWeight: 300 }}>
-                          <p>Mon – Fri: 08:00 – 17:00</p>
+                          <p>Mon – Fri: 08:00 – 18:00</p>
                           <p>Saturday: 08:00 – 13:00</p>
                           <p>Sunday: Closed</p>
                         </div>

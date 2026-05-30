@@ -102,13 +102,12 @@ const conditions = [
 ];
 
 const medicalAids = [
-  "PSEMAS",
-  "Namibia Health Plan",
-  "Namlife",
-  "Renaissance Health",
-  "Namdeb Medical Aid",
-  "Debmarine Namibia",
+  "NHP",
   "NMC",
+  "Named",
+  "Prosperity",
+  "Napotel",
+  "GemHealth",
 ];
 
 const stats = [
@@ -196,11 +195,11 @@ const galleryImages = [
 const faqLeft = [
   {
     q: "Do I need a doctor's referral to see a physiotherapist?",
-    a: "No — you can book directly with us without a referral. However, some medical aids require a referral for reimbursement, so check your plan's requirements before your appointment.",
+    a: "No. Physiotherapists in Namibia are first-contact healthcare practitioners, meaning you can book an appointment directly without a doctor's referral. Physiotherapists are trained to assess, diagnose, and treat a wide range of conditions. If further medical investigation is needed, your physiotherapist will refer you to the appropriate healthcare professional.",
   },
   {
     q: "What should I bring to my first appointment?",
-    a: "Bring any recent X-rays, scans, or specialist letters related to your condition, your medical aid card, and wear comfortable clothing that allows access to the affected area.",
+    a: "Please bring: your medical aid card, your ID or passport, the ID of the main medical aid member (if you are a dependent), N$60 administration fee for opening your patient file, and any relevant medical reports, X-rays, MRI scans, or referral letters if available.",
   },
   {
     q: "How long is a session?",
@@ -219,7 +218,7 @@ const faqLeft = [
 const faqRight = [
   {
     q: "Which medical aids do you accept?",
-    a: "We accept most Namibian medical aids including PSEMAS, Namibia Health Plan (NHP), Namlife, Renaissance Health, and others. Contact us to confirm your specific plan. Uninsured patients are always welcome.",
+    a: "We accept NHP, NMC, Named, Prosperity, Napotel, and GemHealth. Contact us to confirm your specific plan. Uninsured patients are always welcome.",
   },
   {
     q: "Do you do direct billing to medical aids?",
@@ -235,7 +234,7 @@ const faqRight = [
   },
   {
     q: "Where are you located and is there parking?",
-    a: "We are located in Swakopmund, Erongo Region. Free parking is available on-site and the clinic is fully wheelchair accessible. Call us or check the map below for directions.",
+    a: "We are located at Shop Nr 2, Spar Ocean View Shopping Centre, Eugene Muller Street, Swakopmund. Free parking is available on-site. Call us or check the map below for directions.",
   },
 ];
 

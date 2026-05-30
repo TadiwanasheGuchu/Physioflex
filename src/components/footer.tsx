@@ -79,7 +79,7 @@ export function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-[#64748d] text-sm" style={{ fontWeight: 300 }}>
                 <MapPin size={14} className="mt-0.5 shrink-0 text-[#0d9488]" />
-                <span>Sam Nujoma Avenue, Swakopmund, Erongo Region, Namibia</span>
+                <span>Shop Nr 2, Spar Ocean View Shopping Centre, Eugene Muller Street, Swakopmund, Erongo</span>
               </li>
               <li className="flex items-center gap-3 text-[#64748d] text-sm" style={{ fontWeight: 300 }}>
                 <Phone size={14} className="shrink-0 text-[#0d9488]" />
@@ -92,7 +92,7 @@ export function Footer() {
               <li className="flex items-start gap-3 text-[#64748d] text-sm" style={{ fontWeight: 300 }}>
                 <Clock size={14} className="mt-0.5 shrink-0 text-[#0d9488]" />
                 <div>
-                  <p>Mon – Fri: 08:00 – 17:00</p>
+                  <p>Mon – Fri: 08:00 – 18:00</p>
                   <p>Saturday: 08:00 – 13:00</p>
                   <p>Sunday: Closed</p>
                 </div>
