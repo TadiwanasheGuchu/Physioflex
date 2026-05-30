@@ -37,7 +37,7 @@ export default function TeamPage() {
                   {/* Photo */}
                   <div className="relative h-64 overflow-hidden">
                     <Image
-                      src={`${member.photo}?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop`}
+                      src={member.photo}
                       alt={`${member.name} — ${member.title}`}
                       fill
                       className="object-cover object-top"
