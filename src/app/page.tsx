@@ -261,25 +261,49 @@ const categoryColors: Record<string, string> = {
 // ── Page ────────────────────────────────────────────────────
 
 export default async function Home() {
-  // Fetch top 3 approved reviews for homepage
   let featuredReviews: { display_name: string; suburb: string | null; rating: number; body: string; service_name: string | null }[] = [];
+  let appointmentCount = 0;
+  let patientCount = 100;
+  let serviceCount = 0;
+  let therapistCount = 0;
+
   try {
     const supabase = await createClient();
     const db = supabase as any;
-    const { data } = await db
-      .from("reviews")
-      .select("display_name, suburb, rating, body, services(name)")
-      .eq("status", "approved")
-      .gte("rating", 4)
-      .order("rating", { ascending: false })
-      .order("created_at", { ascending: false })
-      .limit(3);
-    if (data && data.length >= 3) {
-      featuredReviews = data.map((r: any) => ({ ...r, service_name: r.services?.name ?? null }));
+
+    const [
+      { data: reviewData },
+      { count: apptCount },
+      { count: ptCount },
+      { count: svcCount },
+      { count: thrCount },
+    ] = await Promise.all([
+      db.from("reviews").select("display_name, suburb, rating, body, services(name)")
+        .eq("status", "approved").gte("rating", 4)
+        .order("rating", { ascending: false }).order("created_at", { ascending: false }).limit(3),
+      db.from("appointments").select("id", { count: "exact", head: true }),
+      db.from("patients").select("id", { count: "exact", head: true }),
+      db.from("services").select("id", { count: "exact", head: true }).eq("is_active", true),
+      db.from("therapists").select("id", { count: "exact", head: true }).eq("is_active", true),
+    ]);
+
+    if (reviewData && reviewData.length >= 3) {
+      featuredReviews = reviewData.map((r: any) => ({ ...r, service_name: r.services?.name ?? null }));
     }
+    appointmentCount = apptCount ?? 0;
+    patientCount = Math.max(ptCount ?? 0, 100);
+    serviceCount = svcCount ?? 0;
+    therapistCount = thrCount ?? 0;
   } catch {
-    // Fall through to static data
+    // Fall through to defaults
   }
+
+  const liveStats = [
+    { value: `${appointmentCount}+`, label: "Appointments Booked" },
+    { value: `${patientCount}+`, label: "Patients Treated" },
+    { value: `${serviceCount}`, label: "Treatment Services" },
+    { value: `${therapistCount}`, label: "Qualified Therapists" },
+  ];
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
@@ -367,7 +391,7 @@ export default async function Home() {
             >
               <div className="text-2xl text-[#0d9488] mb-0.5"
                 style={{ fontWeight: 300, letterSpacing: "-0.5px", fontFeatureSettings: '"tnum"' }}>
-                2,000+
+                {patientCount}+
               </div>
               <div className="text-[#64748d] text-xs">Patients Treated</div>
             </div>
@@ -585,7 +609,7 @@ export default async function Home() {
                   <div className="text-[#6ee7b7] text-sm">Tomorrow, 09:00 · Manual Therapy</div>
                 </div>
                 <div className="border-t border-white/10 pt-6 grid grid-cols-2 gap-5">
-                  {stats.map((stat) => (
+                  {liveStats.map((stat) => (
                     <div key={stat.label}>
                       <div className="text-2xl text-white mb-1"
                         style={{ fontWeight: 300, letterSpacing: "-0.26px", fontFeatureSettings: '"tnum"' }}>
