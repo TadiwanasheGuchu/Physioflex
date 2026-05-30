@@ -1,22 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { Star } from "lucide-react";
+import { Star, ChevronDown } from "lucide-react";
 
 interface Props {
-  token: string;
-  serviceName: string;
+  token?: string;
+  serviceName?: string;
+  services: { id: string; name: string }[];
 }
 
-export function SubmitForm({ token, serviceName }: Props) {
+export function SubmitForm({ token, serviceName, services }: Props) {
   const [rating, setRating] = useState(0);
   const [hovered, setHovered] = useState(0);
   const [body, setBody] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [suburb, setSuburb] = useState("");
+  const [serviceId, setServiceId] = useState("");
   const [consent, setConsent] = useState(false);
   const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+
+  const isOpen = !token;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -30,7 +34,15 @@ export function SubmitForm({ token, serviceName }: Props) {
       const res = await fetch("/api/reviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, rating, review_body: body, display_name: displayName, suburb, consent }),
+        body: JSON.stringify({
+          token: token ?? null,
+          rating,
+          review_body: body,
+          display_name: displayName,
+          suburb,
+          consent,
+          service_id: isOpen ? (serviceId || null) : null,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -69,6 +81,7 @@ export function SubmitForm({ token, serviceName }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-[#e3e8ee] p-6 sm:p-8 shadow-sm space-y-5">
+
       {/* Star rating */}
       <div>
         <label className="block text-sm font-medium text-[#0d253d] mb-3">
@@ -84,9 +97,7 @@ export function SubmitForm({ token, serviceName }: Props) {
               onMouseLeave={() => setHovered(0)}
               className="p-0.5 transition-transform hover:scale-110"
             >
-              <Star
-                className={`w-9 h-9 transition-colors ${n <= displayStars ? "text-[#f59e0b] fill-[#f59e0b]" : "text-gray-300 fill-gray-200"}`}
-              />
+              <Star className={`w-9 h-9 transition-colors ${n <= displayStars ? "text-[#f59e0b] fill-[#f59e0b]" : "text-gray-300 fill-gray-200"}`} />
             </button>
           ))}
         </div>
@@ -96,6 +107,28 @@ export function SubmitForm({ token, serviceName }: Props) {
           </p>
         )}
       </div>
+
+      {/* Service selector (open reviews only) */}
+      {isOpen && services.length > 0 && (
+        <div>
+          <label className="block text-sm font-medium text-[#0d253d] mb-1.5">
+            Service you received <span className="text-[#6b7a99] font-normal">(optional)</span>
+          </label>
+          <div className="relative">
+            <select
+              value={serviceId}
+              onChange={(e) => setServiceId(e.target.value)}
+              className="w-full appearance-none pl-3 pr-8 py-2.5 text-sm border border-[#e3e8ee] rounded-xl bg-white text-[#0d253d] focus:outline-none focus:ring-2 focus:ring-[#0d9488]/20 focus:border-[#0d9488]"
+            >
+              <option value="">Select a service…</option>
+              {services.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7a99] pointer-events-none" />
+          </div>
+        </div>
+      )}
 
       {/* Review text */}
       <div>
@@ -130,7 +163,9 @@ export function SubmitForm({ token, serviceName }: Props) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#0d253d] mb-1.5">Suburb (optional)</label>
+          <label className="block text-sm font-medium text-[#0d253d] mb-1.5">
+            Suburb <span className="text-[#6b7a99] font-normal">(optional)</span>
+          </label>
           <input
             value={suburb}
             onChange={(e) => setSuburb(e.target.value)}

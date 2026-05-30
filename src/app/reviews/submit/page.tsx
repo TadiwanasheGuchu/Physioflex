@@ -17,23 +17,52 @@ export default async function ReviewSubmitPage({
   searchParams: Promise<{ token?: string }>;
 }) {
   const { token } = await searchParams;
+  const supabase = createAdminClient();
+  const db = supabase as any;
 
+  // Fetch active services for the open-review dropdown
+  const { data: servicesData } = await db
+    .from("services")
+    .select("id, name")
+    .eq("is_active", true)
+    .order("name");
+  const services: { id: string; name: string }[] = servicesData ?? [];
+
+  // ── Open review (no token) ──────────────────────────────────────────────────
   if (!token) {
     return (
-      <main className="min-h-screen bg-[#f6f9fc] flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-2xl border border-[#e3e8ee] p-8 text-center shadow-sm">
-          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
-            <span className="text-red-500 text-xl">✕</span>
+      <main className="min-h-screen bg-[#f6f9fc] flex items-center justify-center px-4 py-12">
+        <div className="max-w-lg w-full">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#0d9488]/10 mb-4">
+              <span className="text-2xl">⭐</span>
+            </div>
+            <h1 className="text-2xl font-bold text-[#0d253d] mb-1">Share your experience</h1>
+            <p className="text-sm text-[#6b7a99]">
+              Your feedback helps us improve and helps others find the right care.
+            </p>
           </div>
-          <h1 className="text-lg font-semibold text-[#0d253d] mb-2">Invalid review link</h1>
-          <p className="text-sm text-[#6b7a99]">
-            This link is missing a required token. Please use the link from your appointment follow-up email or WhatsApp.
-          </p>
+          <SubmitForm services={services} />
+          <div className="mt-4 text-center">
+            <p className="text-xs text-[#6b7a99]">
+              You can also{" "}
+              <a
+                href="https://g.page/r/physioflex/review"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#0d9488] hover:underline"
+              >
+                leave a Google review
+              </a>
+              {" "}to help other patients find us.
+            </p>
+          </div>
         </div>
       </main>
     );
   }
 
+  // ── Token-based review (post-appointment) ──────────────────────────────────
   const appointmentId = decodeToken(token);
   if (!appointmentId) {
     return (
@@ -45,9 +74,6 @@ export default async function ReviewSubmitPage({
       </main>
     );
   }
-
-  const supabase = createAdminClient();
-  const db = supabase as any;
 
   const { data: appointment } = await db
     .from("appointments")
@@ -68,7 +94,6 @@ export default async function ReviewSubmitPage({
     );
   }
 
-  // Check for duplicate
   const { data: existing } = await db
     .from("reviews")
     .select("id")
@@ -98,7 +123,6 @@ export default async function ReviewSubmitPage({
   return (
     <main className="min-h-screen bg-[#f6f9fc] flex items-center justify-center px-4 py-12">
       <div className="max-w-lg w-full">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#0d9488]/10 mb-4">
             <span className="text-2xl">⭐</span>
@@ -112,10 +136,7 @@ export default async function ReviewSubmitPage({
             </p>
           )}
         </div>
-
-        <SubmitForm token={token} serviceName={serviceName} />
-
-        {/* Google CTA */}
+        <SubmitForm token={token} serviceName={serviceName} services={[]} />
         <div className="mt-4 text-center">
           <p className="text-xs text-[#6b7a99]">
             You can also{" "}

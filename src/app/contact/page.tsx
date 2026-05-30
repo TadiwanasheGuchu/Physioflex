@@ -130,7 +130,7 @@ export default function ContactPage() {
             {/* Map */}
             <div className="mt-10 rounded-2xl overflow-hidden border border-[#e3e8ee]">
               <iframe
-                src="https://maps.google.com/maps?q=Spar+Ocean+View+Shopping+Centre,+Eugene+Muller+Street,+Swakopmund,+Namibia&output=embed"
+                src="https://maps.google.com/maps?q=-22.640907,14.537624&z=17&output=embed"
                 width="100%"
                 height="280"
                 loading="lazy"

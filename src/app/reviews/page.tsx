@@ -17,14 +17,14 @@ export const metadata: Metadata = {
 
 // Static fallback reviews (shown when DB has no approved reviews yet)
 const STATIC_REVIEWS = [
-  { id: "s1", display_name: "Sarah M.", suburb: "Swakopmund", rating: 5, body: "After my knee surgery, Physioflex had me back on the trail in eight weeks. Marco was exceptional — knowledgeable, encouraging, and always pushed me at exactly the right pace.", verified_patient: true, created_at: "2026-05-12", admin_reply: null, service_name: "Sports Rehabilitation" },
+  { id: "s1", display_name: "Sarah M.", suburb: "Swakopmund", rating: 5, body: "After my knee surgery, Physioflex had me back on the trail in eight weeks. Susan was exceptional — knowledgeable, encouraging, and always pushed me at exactly the right pace.", verified_patient: true, created_at: "2026-05-12", admin_reply: null, service_name: "Sports Rehabilitation" },
   { id: "s2", display_name: "Johan V.", suburb: "Swakopmund", rating: 5, body: "ACL recovery is tough, but having the right physiotherapy team makes all the difference. The structured programme gave me confidence every step of the way.", verified_patient: true, created_at: "2026-04-28", admin_reply: null, service_name: "Post-Surgery Recovery" },
-  { id: "s3", display_name: "Elke B.", suburb: "Walvis Bay", rating: 5, body: "Chronic lower back pain for three years. Six sessions with Anri and I finally understand what was causing it and how to manage it. She's thorough, patient, and explains everything clearly.", verified_patient: true, created_at: "2026-04-15", admin_reply: null, service_name: "Pain Management" },
-  { id: "s4", display_name: "Thomas N.", suburb: "Swakopmund", rating: 5, body: "Neck pain that had been bothering me for months cleared up after just four sessions. Liesl's manual therapy skills are outstanding. Professional and welcoming clinic.", verified_patient: true, created_at: "2026-04-02", admin_reply: null, service_name: "Manual Therapy" },
-  { id: "s5", display_name: "Petrina K.", suburb: "Arandis", rating: 5, body: "Drove from Arandis for treatment and it was absolutely worth it. Marco worked with me on my hamstring strain and had a tailored return-to-sport plan ready from the first session.", verified_patient: true, created_at: "2026-03-18", admin_reply: null, service_name: "Sports Rehabilitation" },
+  { id: "s3", display_name: "Elke B.", suburb: "Walvis Bay", rating: 5, body: "Chronic lower back pain for three years. Six sessions with Vimbai and I finally understand what was causing it and how to manage it. She's thorough, patient, and explains everything clearly.", verified_patient: true, created_at: "2026-04-15", admin_reply: null, service_name: "Pain Management" },
+  { id: "s4", display_name: "Thomas N.", suburb: "Swakopmund", rating: 5, body: "Neck pain that had been bothering me for months cleared up after just four sessions. The manual therapy skills at Physioflex are outstanding. Professional and welcoming clinic.", verified_patient: true, created_at: "2026-04-02", admin_reply: null, service_name: "Manual Therapy" },
+  { id: "s5", display_name: "Petrina K.", suburb: "Arandis", rating: 5, body: "Drove from Arandis for treatment and it was absolutely worth it. Susan worked with me on my hamstring strain and had a tailored return-to-sport plan ready from the first session.", verified_patient: true, created_at: "2026-03-18", admin_reply: null, service_name: "Sports Rehabilitation" },
   { id: "s6", display_name: "Gerhard H.", suburb: "Swakopmund", rating: 4, body: "Very professional service and knowledgeable team. My shoulder pain has improved significantly. The treatment itself was excellent.", verified_patient: true, created_at: "2026-03-05", admin_reply: null, service_name: "Pain Management" },
   { id: "s7", display_name: "Anna S.", suburb: "Swakopmund", rating: 5, body: "I was sceptical about physiotherapy after bad experiences elsewhere, but Physioflex completely changed my mind. The dry needling for my trapezius tension was a game changer.", verified_patient: true, created_at: "2026-02-22", admin_reply: null, service_name: "Manual Therapy" },
-  { id: "s8", display_name: "Reinhardt D.", suburb: "Swakopmund", rating: 5, body: "Post hip replacement rehabilitation. David guided me through each phase with precision and genuine care. Couldn't be happier with the outcome.", verified_patient: true, created_at: "2026-02-10", admin_reply: null, service_name: "Post-Surgery Recovery" },
+  { id: "s8", display_name: "Reinhardt D.", suburb: "Swakopmund", rating: 5, body: "Post hip replacement rehabilitation. Vimbai guided me through each phase with precision and genuine care. Couldn't be happier with the outcome.", verified_patient: true, created_at: "2026-02-10", admin_reply: null, service_name: "Post-Surgery Recovery" },
 ];
 
 const SUCCESS_STORIES = [
@@ -37,7 +37,7 @@ const SUCCESS_STORIES = [
     sessions: 38,
     weeks: 48,
     result: "Returned to competitive cycling, pain-free",
-    story: "Johan tore his ACL in a mountain biking accident. Surgery was the only option. He started at Physioflex two weeks post-op, unable to fully straighten his knee. Marco built a structured 12-month programme that took him through acute recovery, strengthening, return to running, and finally return to sport. Forty-eight weeks later, Johan completed a 60km endurance ride without any knee pain or instability.",
+    story: "Johan tore his ACL in a mountain biking accident. Surgery was the only option. He started at Physioflex two weeks post-op, unable to fully straighten his knee. Susan built a structured 12-month programme that took him through acute recovery, strengthening, return to running, and finally return to sport. Forty-eight weeks later, Johan completed a 60km endurance ride without any knee pain or instability.",
   },
   {
     id: "2",
@@ -48,7 +48,7 @@ const SUCCESS_STORIES = [
     sessions: 8,
     weeks: 6,
     result: "Pain resolved, back to full daily activity",
-    story: "Elke had lived with intermittent but debilitating lower back pain for three years, having seen multiple practitioners without lasting relief. Anri's treatment combined manual therapy with a targeted home exercise programme. By session four the acute pain had resolved; by session eight she was completely pain-free.",
+    story: "Elke had lived with intermittent but debilitating lower back pain for three years, having seen multiple practitioners without lasting relief. Vimbai's treatment combined manual therapy with a targeted home exercise programme. By session four the acute pain had resolved; by session eight she was completely pain-free.",
   },
 ];
 

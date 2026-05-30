@@ -65,28 +65,20 @@ const services = [
 
 const team = [
   {
-    name: "Anri van der Berg",
+    name: "Susan Mubatapasango",
     title: "Senior Physiotherapist",
-    initials: "AV",
-    specialisations: ["Manual Therapy", "Pain Management"],
-    languages: ["English", "Afrikaans"],
-    bio: "10 years of clinical experience with a special interest in spinal rehabilitation and chronic pain.",
+    initials: "SM",
+    specialisations: ["Manual Therapy", "Pain Management", "Sports Rehab"],
+    languages: ["English"],
+    bio: "Over 15 years of clinical experience with a patient-centred approach built on evidence-based techniques and genuine care.",
   },
   {
-    name: "Marco Shiimi",
-    title: "Sports Rehabilitation Specialist",
-    initials: "MS",
-    specialisations: ["Sports Rehab", "Dry Needling"],
-    languages: ["English", "Oshiwambo"],
-    bio: "Former national athlete turned physiotherapist, passionate about getting active patients back to their sport.",
-  },
-  {
-    name: "Liesl Haussmann",
-    title: "Manual Therapy Specialist",
-    initials: "LH",
-    specialisations: ["Post-Surgery", "Paediatrics"],
-    languages: ["English", "Afrikaans", "German"],
-    bio: "Trained in Germany and Namibia, Liesl brings international expertise to post-surgical and paediatric care.",
+    name: "Vimbai",
+    title: "Senior Physiotherapist",
+    initials: "V",
+    specialisations: ["Post-Surgical Rehab", "Dry Needling", "Neurological Rehab"],
+    languages: ["English"],
+    bio: "More than 15 years of hands-on practice spanning sports injuries, chronic pain, and neurological rehabilitation.",
   },
 ];
 
