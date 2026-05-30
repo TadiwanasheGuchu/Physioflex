@@ -130,7 +130,7 @@ export default function ContactPage() {
             {/* Map */}
             <div className="mt-10 rounded-2xl overflow-hidden border border-[#e3e8ee]">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14778.123456789!2d14.5252!3d-22.6785!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1c2a5f0f0f0f0f0f%3A0x0!2sSwakopmund%2C+Namibia!5e0!3m2!1sen!2sna!4v1715000000000!5m2!1sen!2sna"
+                src="https://maps.google.com/maps?q=Spar+Ocean+View+Shopping+Centre,+Eugene+Muller+Street,+Swakopmund,+Namibia&output=embed"
                 width="100%"
                 height="280"
                 loading="lazy"
