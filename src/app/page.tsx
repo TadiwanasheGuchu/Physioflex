@@ -642,8 +642,8 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── Reviews / Testimonials ─────────────────────────── */}
-      <section id="testimonials" className="py-24 px-6 bg-[#f0fdfa]">
+      {/* ── Reviews / Testimonials — only shown when real approved reviews exist */}
+      {featuredReviews.length >= 3 && <section id="testimonials" className="py-24 px-6 bg-[#f0fdfa]">
         <div className="max-w-6xl mx-auto">
           <span className="text-[10px] font-medium text-[#0d9488] uppercase tracking-widest">Patient Reviews</span>
           <div className="flex flex-col md:flex-row md:items-end md:justify-between mt-3 mb-10">
@@ -714,7 +714,7 @@ export default async function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ── Blog Teaser ────────────────────────────────────── */}
       <section className="py-24 px-6 bg-white">
