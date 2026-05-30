@@ -258,6 +258,9 @@ export default async function Home() {
   let patientCount = 100;
   let serviceCount = 0;
   let therapistCount = 0;
+  let reviewCount = 0;
+  let reviewAvg = 0;
+  let reviewBreakdown: { label: string; pct: number }[] = [];
 
   try {
     const supabase = await createClient();
@@ -265,6 +268,7 @@ export default async function Home() {
 
     const [
       { data: reviewData },
+      { data: allRatings },
       { count: apptCount },
       { count: ptCount },
       { count: svcCount },
@@ -273,6 +277,7 @@ export default async function Home() {
       db.from("reviews").select("display_name, suburb, rating, body, services(name)")
         .eq("status", "approved").gte("rating", 4)
         .order("rating", { ascending: false }).order("created_at", { ascending: false }).limit(3),
+      db.from("reviews").select("rating").eq("status", "approved"),
       db.from("appointments").select("id", { count: "exact", head: true }),
       db.from("patients").select("id", { count: "exact", head: true }),
       db.from("services").select("id", { count: "exact", head: true }).eq("is_active", true),
@@ -281,6 +286,14 @@ export default async function Home() {
 
     if (reviewData && reviewData.length >= 3) {
       featuredReviews = reviewData.map((r: any) => ({ ...r, service_name: r.services?.name ?? null }));
+    }
+    if (allRatings && allRatings.length > 0) {
+      reviewCount = allRatings.length;
+      reviewAvg = allRatings.reduce((s: number, r: any) => s + r.rating, 0) / reviewCount;
+      reviewBreakdown = [5, 4, 3, 2, 1].map((star) => ({
+        label: `${star} star${star === 1 ? "" : "s"}`,
+        pct: Math.round((allRatings.filter((r: any) => r.rating === star).length / reviewCount) * 100),
+      }));
     }
     appointmentCount = apptCount ?? 0;
     patientCount = Math.max(ptCount ?? 0, 100);
@@ -642,30 +655,32 @@ export default async function Home() {
             </Link>
           </div>
 
-          {/* Rating summary */}
-          <div className="bg-white rounded-xl border border-[#e3e8ee] p-6 mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-6"
-            style={{ boxShadow: "rgba(0,55,112,0.08) 0 1px 3px" }}>
-            <div className="text-center shrink-0">
-              <div className="text-5xl text-[#0d253d] mb-1" style={{ fontWeight: 300, letterSpacing: "-1px" }}>4.9</div>
-              <div className="flex gap-0.5 justify-center mb-1">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <Star key={i} size={14} className="fill-[#f59e0b] text-[#f59e0b]" />
+          {/* Rating summary — only shown when real reviews exist */}
+          {reviewCount > 0 && (
+            <div className="bg-white rounded-xl border border-[#e3e8ee] p-6 mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-6"
+              style={{ boxShadow: "rgba(0,55,112,0.08) 0 1px 3px" }}>
+              <div className="text-center shrink-0">
+                <div className="text-5xl text-[#0d253d] mb-1" style={{ fontWeight: 300, letterSpacing: "-1px" }}>{reviewAvg.toFixed(1)}</div>
+                <div className="flex gap-0.5 justify-center mb-1">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <Star key={i} size={14} className={i <= Math.round(reviewAvg) ? "fill-[#f59e0b] text-[#f59e0b]" : "fill-gray-200 text-gray-200"} />
+                  ))}
+                </div>
+                <div className="text-[#64748d] text-xs">{reviewCount} {reviewCount === 1 ? "review" : "reviews"}</div>
+              </div>
+              <div className="flex-1 w-full space-y-2">
+                {reviewBreakdown.map(({ label, pct }) => (
+                  <div key={label} className="flex items-center gap-3">
+                    <span className="text-xs text-[#64748d] w-12 shrink-0" style={{ fontWeight: 300 }}>{label}</span>
+                    <div className="flex-1 h-1.5 bg-[#e3e8ee] rounded-full overflow-hidden">
+                      <div className="h-full bg-[#0d9488] rounded-full" style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="text-xs text-[#64748d] w-8 text-right shrink-0" style={{ fontFeatureSettings: '"tnum"', fontWeight: 300 }}>{pct}%</span>
+                  </div>
                 ))}
               </div>
-              <div className="text-[#64748d] text-xs">142 reviews</div>
             </div>
-            <div className="flex-1 w-full space-y-2">
-              {[["5 stars", 89], ["4 stars", 8], ["3 stars", 2], ["2 stars", 1], ["1 star", 0]].map(([label, pct]) => (
-                <div key={label} className="flex items-center gap-3">
-                  <span className="text-xs text-[#64748d] w-12 shrink-0" style={{ fontWeight: 300 }}>{label}</span>
-                  <div className="flex-1 h-1.5 bg-[#e3e8ee] rounded-full overflow-hidden">
-                    <div className="h-full bg-[#0d9488] rounded-full" style={{ width: `${pct}%` }} />
-                  </div>
-                  <span className="text-xs text-[#64748d] w-8 text-right shrink-0" style={{ fontFeatureSettings: '"tnum"', fontWeight: 300 }}>{pct}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          )}
 
           {/* Review cards — live DB or static fallback */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -684,7 +699,9 @@ export default async function Home() {
                       <Star key={i} size={12} className="fill-[#f59e0b] text-[#f59e0b]" />
                     ))}
                   </div>
-                  <span className="text-[10px] font-medium text-[#0f766e] bg-[#ccfbf1] px-2 py-0.5 rounded-full">Verified Patient</span>
+                  {featuredReviews.length >= 3 && (
+                    <span className="text-[10px] font-medium text-[#0f766e] bg-[#ccfbf1] px-2 py-0.5 rounded-full">Verified Patient</span>
+                  )}
                 </div>
                 <p className="text-[#0d253d] text-sm leading-7 mb-6" style={{ fontWeight: 300 }}>
                   &ldquo;{t.body}&rdquo;
