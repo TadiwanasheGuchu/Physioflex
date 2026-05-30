@@ -19,7 +19,7 @@ export default async function BookPage() {
   const [{ data: services }, { data: therapists }] = await Promise.all([
     supabase
       .from("services")
-      .select("id, name, description, duration_min, price_nad")
+      .select("id, name, description, duration_min")
       .eq("is_active", true)
       .order("name"),
     supabase

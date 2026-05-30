@@ -109,7 +109,6 @@ const localBusinessSchema = {
       closes: "13:00",
     },
   ],
-  priceRange: "N$350 – N$750",
   currenciesAccepted: "NAD",
   paymentAccepted: "Cash, Card, Medical Aid",
   areaServed: {

@@ -220,12 +220,6 @@ function StepService({
                   {s.description}
                 </p>
               )}
-              <div className="flex items-center gap-4">
-                <span className="inline-flex items-center gap-1 text-xs text-[#64748d]">
-                  <Clock size={12} />
-                  {s.duration_min} min
-                </span>
-              </div>
             </button>
           );
         })}
