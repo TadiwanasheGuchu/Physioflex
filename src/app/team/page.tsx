@@ -35,12 +35,12 @@ export default function TeamPage() {
                   style={{ boxShadow: "rgba(0,55,112,0.08) 0 1px 3px" }}
                 >
                   {/* Photo */}
-                  <div className="relative h-64 overflow-hidden">
+                  <div className="relative aspect-4/5 overflow-hidden">
                     <Image
                       src={member.photo}
                       alt={`${member.name} — ${member.title}`}
                       fill
-                      className="object-cover object-top"
+                      className="object-cover object-center"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>
