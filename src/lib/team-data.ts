@@ -31,7 +31,7 @@ export const team: TeamMember[] = [
   },
   {
     id: "vimbai",
-    name: "Vimbai",
+    name: "Vimbai Shumba",
     title: "Senior Physiotherapist",
     hpcnaNumber: "HPCNA Registered",
     photo: "/vimbai.jpeg",

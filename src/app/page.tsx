@@ -73,7 +73,7 @@ const team = [
     bio: "Over 15 years of clinical experience with a patient-centred approach built on evidence-based techniques and genuine care.",
   },
   {
-    name: "Vimbai",
+    name: "Vimbai Shumba",
     title: "Senior Physiotherapist",
     initials: "V",
     specialisations: ["Post-Surgical Rehab", "Dry Needling", "Neurological Rehab"],
