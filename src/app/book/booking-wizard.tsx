@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, ChevronLeft, ChevronRight, Clock, DollarSign } from "lucide-react";
+import { Turnstile } from "@marsidev/react-turnstile";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
+
+const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -450,6 +454,8 @@ function StepDetails({
   submitting,
   error,
   isGuest,
+  onCaptchaToken,
+  captchaToken,
 }: {
   booking: BookingState;
   onChange: (field: keyof BookingState, value: string | boolean) => void;
@@ -458,7 +464,10 @@ function StepDetails({
   submitting: boolean;
   error: string;
   isGuest: boolean;
+  captchaToken: string;
+  onCaptchaToken: (token: string) => void;
 }) {
+  const turnstileRef = useRef<TurnstileInstance>(null);
   const input = "w-full px-4 py-3 text-sm text-[#0d253d] placeholder:text-[#64748d] bg-white border border-[#a8c3de] rounded-lg focus:outline-none focus:border-[#0d9488] transition-colors";
 
   return (
@@ -574,6 +583,19 @@ function StepDetails({
         </label>
       </div>
 
+      {SITE_KEY && (
+        <div className="flex justify-center mb-4">
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={SITE_KEY}
+            onSuccess={onCaptchaToken}
+            onExpire={() => onCaptchaToken("")}
+            onError={() => onCaptchaToken("")}
+            options={{ theme: "light" }}
+          />
+        </div>
+      )}
+
       {error && (
         <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-4">
           {error}
@@ -586,7 +608,7 @@ function StepDetails({
         </button>
         <button
           onClick={onNext}
-          disabled={submitting || !booking.firstName || !booking.lastName || !booking.phone || !booking.acceptTerms || (isGuest && !booking.email)}
+          disabled={submitting || !booking.firstName || !booking.lastName || !booking.phone || !booking.acceptTerms || (isGuest && !booking.email) || (!!SITE_KEY && !captchaToken)}
           className="px-6 py-3 rounded-full bg-[#0d9488] text-white text-sm font-medium hover:bg-[#0f766e] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {submitting ? "Booking…" : "Confirm Booking"}
@@ -613,6 +635,7 @@ export function BookingWizard({
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
 
   const [booking, setBooking] = useState<BookingState>({
     service: null,
@@ -649,6 +672,7 @@ export function BookingWizard({
         date: booking.date,
         time: booking.time,
         isGuest,
+        captchaToken,
         patient: {
           firstName: booking.firstName,
           lastName: booking.lastName,
@@ -718,6 +742,8 @@ export function BookingWizard({
           submitting={submitting}
           error={error}
           isGuest={isGuest}
+          captchaToken={captchaToken}
+          onCaptchaToken={setCaptchaToken}
         />
       )}
     </div>

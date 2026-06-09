@@ -1,0 +1,18 @@
+
+> my-react-app@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.56.1:3000
+- Environments: .env.local
+✓ Ready in 3.7s
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3333
+- PID:          16504
+- Dir:          C:\Dev\my-react-app
+- Log:          .next\dev\logs\next-development.log
+
+Run taskkill /PID 16504 /F to stop it.
+[?25h

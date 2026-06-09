@@ -115,13 +115,21 @@ export function Footer() {
           />
         </div>
 
-        <div className="border-t border-white/10 mt-8 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
-          <p className="text-[#64748d] text-xs" style={{ fontWeight: 300 }}>
-            © 2026 Physioflex. All rights reserved.
+        <div className="border-t border-white/10 mt-8 pt-6">
+          <p className="text-[#64748d] text-xs mb-2" style={{ fontWeight: 400 }}>
+            Medical aids accepted
           </p>
           <p className="text-[#64748d] text-xs" style={{ fontWeight: 300 }}>
-            Swakopmund, Erongo, Namibia
+            NHP · NMC · Named · Prosperity · Napotel · GemHealth
           </p>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 mt-4">
+            <p className="text-[#64748d] text-xs" style={{ fontWeight: 300 }}>
+              © 2026 Physioflex. All rights reserved.
+            </p>
+            <p className="text-[#64748d] text-xs" style={{ fontWeight: 300 }}>
+              Swakopmund, Erongo, Namibia
+            </p>
+          </div>
         </div>
       </div>
     </footer>

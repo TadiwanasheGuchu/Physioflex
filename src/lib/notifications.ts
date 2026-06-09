@@ -1,11 +1,10 @@
 import { Resend } from "resend";
-import twilio from "twilio";
 import { render } from "@react-email/components";
 import { BookingConfirmationEmail } from "@/emails/booking-confirmation";
 import { AppointmentReminderEmail } from "@/emails/appointment-reminder";
 import { InvoiceEmail } from "@/emails/invoice";
 
-// ─── Clients (lazy-init so missing keys don't break builds) ───────────────────
+// ─── Email client ─────────────────────────────────────────────────────────────
 
 function getResend() {
   const key = process.env.RESEND_API_KEY;
@@ -13,16 +12,20 @@ function getResend() {
   return new Resend(key);
 }
 
-function getTwilioClient() {
-  const sid = process.env.TWILIO_ACCOUNT_SID;
-  const token = process.env.TWILIO_AUTH_TOKEN;
-  if (!sid || !token) throw new Error("Twilio credentials are not set");
-  return twilio(sid, token);
-}
-
 const FROM_EMAIL = "appointments@physioflex.na";
-const WHATSAPP_FROM = process.env.TWILIO_WHATSAPP_FROM ?? "whatsapp:+14155238886"; // Twilio sandbox default
-const CLINIC_PHONE = "+264640000000"; // replace with real clinic number
+
+// ─── WhatsApp stub ────────────────────────────────────────────────────────────
+// Replace this function body with your chosen provider (Meta Cloud API, Fonnte, etc.)
+// Expected env vars will depend on the provider you pick.
+
+async function sendWhatsApp(to: string, body: string): Promise<void> {
+  // TODO: integrate WhatsApp provider
+  // Meta Cloud API example:
+  //   POST https://graph.facebook.com/v19.0/{PHONE_NUMBER_ID}/messages
+  //   Authorization: Bearer {WHATSAPP_TOKEN}
+  //   Body: { messaging_product: "whatsapp", to, type: "text", text: { body } }
+  console.log(`[whatsapp stub] to=${to} | ${body.slice(0, 60)}...`);
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -33,8 +36,8 @@ export interface BookingData {
   reference: string;
   serviceName: string;
   therapistName: string;
-  date: string;   // "Thursday, 22 May 2026"
-  time: string;   // "09:00 AM"
+  date: string;
+  time: string;
   siteUrl: string;
 }
 
@@ -55,13 +58,9 @@ export interface InvoiceData {
   payUrl?: string;
 }
 
-// ─── Email helpers ─────────────────────────────────────────────────────────────
+// ─── Email helper ─────────────────────────────────────────────────────────────
 
-async function sendEmail(opts: {
-  to: string;
-  subject: string;
-  html: string;
-}) {
+async function sendEmail(opts: { to: string; subject: string; html: string }) {
   try {
     const resend = getResend();
     await resend.emails.send({
@@ -75,29 +74,11 @@ async function sendEmail(opts: {
   }
 }
 
-// ─── WhatsApp helpers ─────────────────────────────────────────────────────────
-
-async function sendWhatsApp(to: string, body: string) {
-  if (!to) return;
-  const normalized = to.startsWith("+") ? to : `+${to}`;
-  try {
-    const client = getTwilioClient();
-    await client.messages.create({
-      from: WHATSAPP_FROM,
-      to: `whatsapp:${normalized}`,
-      body,
-    });
-  } catch (err) {
-    console.error("[notifications] WhatsApp failed:", err);
-  }
-}
-
 // ─── Public notification functions ────────────────────────────────────────────
 
 export async function sendBookingConfirmation(data: BookingData) {
   const manageUrl = `${data.siteUrl}/book/manage?ref=${data.reference}`;
 
-  // Email
   const html = await render(
     BookingConfirmationEmail({
       patientName: data.patientName,
@@ -116,7 +97,6 @@ export async function sendBookingConfirmation(data: BookingData) {
     html,
   });
 
-  // WhatsApp
   if (data.patientWhatsapp) {
     const msg =
       `Hi ${data.patientName}, your appointment at Physioflex is confirmed ✅\n\n` +
@@ -124,8 +104,7 @@ export async function sendBookingConfirmation(data: BookingData) {
       `👤 Therapist: ${data.therapistName}\n` +
       `📍 Swakopmund Clinic\n\n` +
       `Reference: ${data.reference}\n` +
-      `Manage booking: ${manageUrl}\n\n` +
-      `Reply HELP for assistance.`;
+      `Manage booking: ${manageUrl}`;
     await sendWhatsApp(data.patientWhatsapp, msg);
   }
 }
@@ -133,7 +112,6 @@ export async function sendBookingConfirmation(data: BookingData) {
 export async function sendAppointmentReminder(data: ReminderData) {
   const manageUrl = `${data.siteUrl}/book/manage?ref=${data.reference}`;
 
-  // Email
   const html = await render(
     AppointmentReminderEmail({
       patientName: data.patientName,
@@ -154,7 +132,6 @@ export async function sendAppointmentReminder(data: ReminderData) {
 
   await sendEmail({ to: data.patientEmail, subject, html });
 
-  // WhatsApp
   if (data.patientWhatsapp) {
     const msg =
       data.hoursUntil === 24
@@ -205,7 +182,6 @@ export async function sendInvoiceEmail(data: InvoiceData) {
     html,
   });
 
-  // WhatsApp for paid receipts
   if (data.patientWhatsapp && data.status === "paid") {
     const msg =
       `Hi ${data.patientName}, your payment of N$${data.amountNAD} for ${data.serviceName} has been received. ✅\n\n` +
@@ -214,8 +190,6 @@ export async function sendInvoiceEmail(data: InvoiceData) {
     await sendWhatsApp(data.patientWhatsapp, msg);
   }
 }
-
-// ─── Review Request ───────────────────────────────────────────────────────────
 
 export async function sendReviewRequest(data: {
   patientName: string;
@@ -229,7 +203,6 @@ export async function sendReviewRequest(data: {
   const token = Buffer.from(data.appointmentId).toString("base64url");
   const reviewUrl = `${data.siteUrl}/reviews/submit?token=${token}`;
 
-  // Email
   const html = `
     <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px 16px;">
       <div style="text-align: center; margin-bottom: 24px;">
@@ -258,7 +231,6 @@ export async function sendReviewRequest(data: {
     html,
   });
 
-  // WhatsApp
   if (data.patientWhatsapp) {
     const msg =
       `Hi ${data.patientName}! 👋\n\n` +

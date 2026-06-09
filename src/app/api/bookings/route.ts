@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { NextRequest, NextResponse } from "next/server";
 import { sendBookingConfirmation } from "@/lib/notifications";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 function makeReference() {
   const year = new Date().getFullYear();
@@ -16,7 +17,15 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   const body = await request.json();
-  const { serviceId, therapistId, date, time, patient, isGuest } = body;
+  const { serviceId, therapistId, date, time, patient, isGuest, captchaToken } = body;
+
+  // Verify CAPTCHA
+  if (captchaToken !== undefined) {
+    const captchaOk = await verifyTurnstile(captchaToken ?? "");
+    if (!captchaOk) {
+      return NextResponse.json({ error: "Security check failed. Please refresh and try again." }, { status: 400 });
+    }
+  }
 
   // Guests must provide email; logged-in users use their account email
   if (isGuest && !patient?.email) {

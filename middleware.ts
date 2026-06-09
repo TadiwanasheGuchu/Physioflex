@@ -31,6 +31,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isProtectedPortal = pathname.startsWith("/portal");
   const isProtectedAdmin = pathname.startsWith("/admin");
+  const isProtectedTherapist = pathname.startsWith("/therapist");
   // /auth/reset and /auth/callback must be reachable even while a session exists
   const isAuthPage =
     pathname.startsWith("/auth") &&
@@ -38,7 +39,7 @@ export async function middleware(request: NextRequest) {
     !pathname.startsWith("/auth/callback");
 
   // Redirect unauthenticated users away from protected routes
-  if ((isProtectedPortal || isProtectedAdmin) && !user) {
+  if ((isProtectedPortal || isProtectedAdmin || isProtectedTherapist) && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     url.searchParams.set("redirect", pathname);
