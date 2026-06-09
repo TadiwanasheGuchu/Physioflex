@@ -1,10 +1,9 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { ContentManager } from "./content-manager";
 import { blogPosts } from "@/lib/blog-data";
 
 export default async function AdminContentPage() {
-  const supabase = await createClient();
-  const db = supabase as any;
+  const db = createAdminClient() as any;
 
   const [{ data: services }, { data: reviews }] = await Promise.all([
     db

@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { Calendar, Users, DollarSign, MessageSquare, Clock, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
@@ -51,8 +51,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default async function AdminPage() {
-  const supabase = await createClient();
-  const db = supabase as any;
+  const db = createAdminClient() as any;
 
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];

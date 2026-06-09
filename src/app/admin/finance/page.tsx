@@ -1,9 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { FinanceDashboard } from "./finance-dashboard";
 
 export default async function AdminFinancePage() {
-  const supabase = await createClient();
-  const db = supabase as any;
+  const db = createAdminClient() as any;
 
   // Fetch last 6 months of invoices
   const sixMonthsAgo = new Date();

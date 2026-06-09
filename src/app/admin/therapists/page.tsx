@@ -1,9 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { TherapistsManager } from "./therapists-manager";
 
 export default async function AdminTherapistsPage() {
-  const supabase = await createClient();
-  const db = supabase as any;
+  const db = createAdminClient() as any;
 
   const [{ data: therapists }, { data: appointments }] = await Promise.all([
     db

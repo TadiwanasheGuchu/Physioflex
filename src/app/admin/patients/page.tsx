@@ -1,9 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { PatientsTable } from "./patients-table";
 
 export default async function AdminPatientsPage() {
-  const supabase = await createClient();
-  const db = supabase as any;
+  const db = createAdminClient() as any;
 
   const { data: patients } = await db
     .from("patients")

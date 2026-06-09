@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
 import { ArrowLeft, User, Phone, Heart, Calendar } from "lucide-react";
 import Link from "next/link";
@@ -20,8 +20,7 @@ function StatusBadge({ status }: { status: string }) {
 
 export default async function AdminPatientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createClient();
-  const db = supabase as any;
+  const db = createAdminClient() as any;
 
   const [{ data: patient }, { data: appointments }, { data: invoices }, { data: progressLogs }] = await Promise.all([
     db.from("patients").select("*").eq("id", id).single(),
